@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 public class VolumeControl : MonoBehaviour
 {
-    public string volumeParameter = "MasterVolume";
+    public string[] volumeParameters = new []{"MasterVolume"};
     public AudioMixer mixer;
     public Slider slider;
     private float _volumeValue;
@@ -21,17 +21,26 @@ public class VolumeControl : MonoBehaviour
     private void HandleSliderValueChanged(float value)
     {
         _volumeValue = Mathf.Log10(value) * _multiplier;
-        mixer.SetFloat(volumeParameter, _volumeValue);
+        foreach (var sound in volumeParameters)
+        {
+            mixer.SetFloat(sound, _volumeValue);
+        }
     }
 
     void Start()
     {
-        _volumeValue = PlayerPrefs.GetFloat(volumeParameter, Mathf.Log10(slider.value) * _multiplier);
+        foreach (var sound in volumeParameters)
+        {
+            _volumeValue = PlayerPrefs.GetFloat(sound, Mathf.Log10(slider.value) * _multiplier);
+        }
         slider.value = Mathf.Pow(10f, _volumeValue / _multiplier);
     }
 
     private void OnDisable()
     {
-        PlayerPrefs.SetFloat(volumeParameter, _volumeValue);
+        foreach (var sound in volumeParameters)
+        {
+            PlayerPrefs.SetFloat(sound, _volumeValue);
+        }
     }
 }
